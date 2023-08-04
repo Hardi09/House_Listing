@@ -6,14 +6,13 @@ const path = require('path');
 
 const Sign = require('./Models/SignUpInModel');
 const Home = require('./Models/House');
-
 const app = express();
 const port = 3000;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-
+app.use('/HouseImages', express.static(__dirname + '/HouseImages'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -22,6 +21,32 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+
+// Connect to MongoDB and load JSON data
+const mongoose = require('mongoose');
+const config = require('./util/config');
+
+async function loadJsonData() {
+  try {
+    console.log('Loading JSON data...');
+    // Clear the existing data in the 'House' collection
+    await Home.deleteMany({});
+
+    // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
+    const jsonData = require('D://HouseProjectFinal/House_Listing/houses.json');
+
+    console.log('JSON data loaded:', jsonData);
+
+    // Insert the JSON data into the 'House' collection
+    const insertedData = await Home.insertMany(jsonData);
+
+    console.log(`${insertedData.length} documents inserted into the 'House' collection.`);
+  } catch (err) {
+    console.error('Error loading JSON data into MongoDB:', err);
+  }
+}
+
+loadJsonData();
 
 // Authentication middleware
 const authenticateUser = (req, res, next) => {
@@ -95,22 +120,23 @@ app.get('/mainDashboard', (req, res) => {
   res.redirect('/'); // Redirect to the mainDashboard page
 });
 
-app.get('/houses', authenticateUser, async (req, res) => {
+// Fetch all houses from the MongoDB collection
+app.get('/houses', async (req, res) => {
   try {
-    const userID = req.session.user._id;
-    const houses = await Home.find({ userID });
+    const houses = await Home.find({});
 
     if (houses.length === 0) {
-      res.render('houses', { error: 'No houses found for the user', houses: [] });
+      res.render('houses', { error: 'No houses found', houses: [], currentUser: req.session.user });
       return;
     }
 
-    res.render('houses', { houses });
+    res.render('houses', { houses, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error retrieving houses');
   }
 });
+
 app.get('/add-house', authenticateUser, (req, res) => {
   res.render('addHouse'); // Render the add-house form view
 });
@@ -134,12 +160,10 @@ app.get('/update-house/:id', authenticateUser, async (req, res) => {
     const houseID = req.params.id;
     const userID = req.session.user._id;
     const house = await Home.findOne({ _id: houseID, userID });
-
     if (!house) {
       res.status(404).send('House not found');
       return;
     }
-
     res.render('updateHouse', { house });
   } catch (err) {
     console.error(err);
@@ -153,7 +177,6 @@ app.post('/update-house/:id', authenticateUser, async (req, res) => {
     const userID = req.session.user._id;
     const { title, description, price, location, photos } = req.body;
     const updatedHouse = await Home.findOneAndUpdate({ _id: houseID, userID }, { title, description, price, location, photos });
-
     if (!updatedHouse) {
       res.status(404).send('House not found');
       return;
@@ -202,36 +225,15 @@ app.post('/delete-house/:id', authenticateUser, async (req, res) => {
   }
 });
 
-
-
-
-// app.get('/search', authenticateUser, async (req, res) => {
-  
-//   const { location, price } = req.query;
-  
-//     const houses = await Home.find({ location, price });
-
-//     const filteredHouses = houses.filter(house => {
-     
-//     const isLocationMatched = location ? house.location.toLowerCase().includes(location.toLowerCase()) : true;
-//     const isPriceMatched = price ? house.price <= parseInt(price) : true;
-//     return isLocationMatched && isPriceMatched;
-//   });
-//   console.log("hiiiiiii")
-//   res.render('houses', { houses: filteredHouses });  
-// });
-
-
-app.get('/search', (req, res) => {
-  const location = req.query.location;
-  const price = req.query.price;
-  console.log(req.query);
-  res.render('search-results', { location, price });
+app.use((req, res, next) => {
+  res.status(404).send('Page not found.');
 });
 
-
-
-
+// Error handler middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).send('Something went wrong.');
+});
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

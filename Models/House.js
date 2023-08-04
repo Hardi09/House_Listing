@@ -5,7 +5,7 @@ const houseSchema = new mongoose.Schema({
   description: { type: String, required: true },
   price: { type: Number, required: true },
   location: { type: String, required: true },
-  photos: [{ type: String }],
+  photos: [{ type: Buffer }],
   userID: { type: mongoose.Schema.Types.ObjectId, ref: 'SignUpIn' }
 });
 
