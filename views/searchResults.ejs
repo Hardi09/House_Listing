@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>House Search Results</title>
+</head>
+<body>
+  <h1>House Search Results</h1>
+  <% if (error) { %>
+    <p><%= error %></p>
+  <% } else { %>
+    <% if (houses.length === 0) { %>
+      <p>No houses found.</p>
+    <% } else { %>
+      <ul>
+        <% houses.forEach(house => { %>
+          <li><%= house.title %> </li>
+            <li><%= house.description %> </li>
+            <li> <%= house.price %></li>
+            <li> <%= house.location %></li>
+            <li>
+              <% house.photos.forEach(photo => { %>
+                <img src="<%= photo %>" alt="<%= house.title %> Photo" style="max-width: 200px;">
+              <% }) %>
+            </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  <% } %>
+
+  <button onclick="location.href='/dashboard'">Back to Dashboard</button>
+</body>
+</html>

@@ -82,3 +82,8 @@ or AWS for deploying your application.
 This is a basic outline for your project. 
 As you build it, you will probably need to add more features and 
 make some adjustments to this plan. Good luck with your project!
+
+
+
+-- CLick on every house to see more
+-- when house is added image is not displayed

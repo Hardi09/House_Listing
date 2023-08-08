@@ -1,0 +1,213 @@
+[
+    {
+      "title": "House1",
+      "description": "Spacious 4 BHK",
+      "price": 250000,
+      "location": "New York",
+      "photos": ["/HouseImages/i1.jpg"]
+    },
+    {
+      "title": "House2",
+      "description": "3 BHK near mall",
+      "price": 112000,
+      "location": "New York",
+      "photos": ["/HouseImages/i2.jpg"]
+    },
+    {
+      "title": "House3",
+      "description": "2 BHK with garden",
+      "price": 185000,
+      "location": "Los Angeles",
+      "photos": ["/HouseImages/i16.jpg"]
+    },
+    {
+      "title": "House4",
+      "description": "Sea-facing penthouse",
+      "price": 550000,
+      "location": "Los Angeles",
+      "photos": ["/HouseImages/i4.jpg"]
+    },
+    {
+      "title": "House5",
+      "description": "Luxury villa",
+      "price": 980000,
+      "location": "Miami",
+      "photos": ["/HouseImages/i5.jpg"]
+    },
+    {
+      "title": "House 6",
+      "description": "5 BHK bungalow",
+      "price": 750000,
+      "location": "Miami",
+      "photos": ["/HouseImages/i6.jpg"]
+    },
+    {
+      "title": "House7",
+      "description": "3 BHK in city center",
+      "price": 320000,
+      "location": "Chicago",
+      "photos": ["/HouseImages/i7.jpg"]
+    },
+    {
+      "title": "House8",
+      "description": "2 BHK near park",
+      "price": 175000,
+      "location": "Chicago",
+      "photos": ["/HouseImages/i8.jpg"]
+    },
+    {
+      "title": "House9",
+      "description": "4 BHK with pool",
+      "price": 420000,
+      "location": "San Francisco",
+      "photos": ["/HouseImages/i9.jpg"]
+    },
+    {
+      "title": "House10",
+      "description": "2 BHK affordable",
+      "price": 125000,
+      "location": "San Francisco",
+      "photos": ["/HouseImages/i10.jpg"]
+    },
+    {
+      "title": "House11",
+      "description": "3 BHK apartment",
+      "price": 198000,
+      "location": "Seattle",
+      "photos": ["/HouseImages/i11.jpg"]
+    },
+    {
+      "title": "House12",
+      "description": "1 BHK for students",
+      "price": 80000,
+      "location": "Seattle",
+      "photos": ["/HouseImages/i12.jpg"]
+    },
+    {
+      "title": "House13",
+      "description": "2 BHK with parking",
+      "price": 168000,
+      "location": "Dallas",
+      "photos": ["/HouseImages/i13.jpg"]
+    },
+    {
+      "title": "House14",
+      "description": "3 BHK near mall",
+      "price": 225000,
+      "location": "Dallas",
+      "photos": ["/HouseImages/i14.jpg"]
+    },
+    {
+      "title": "House15",
+      "description": "4 BHK luxurious",
+      "price": 650000,
+      "location": "Houston",
+      "photos": ["/HouseImages/i15.jpg"]
+    },
+    {
+      "title": "House16",
+      "description": "3 BHK sea view",
+      "price": 410000,
+      "location": "Houston",
+      "photos": ["/HouseImages/i16.jpg"]
+    },
+    {
+      "title": "House17",
+      "description": "1 BHK budget friendly",
+      "price": 95000,
+      "location": "Atlanta",
+      "photos": ["/HouseImages/i17.jpg"]
+    },
+    {
+      "title": "House18",
+      "description": "Studio apartment",
+      "price": 75000,
+      "location": "Atlanta",
+      "photos": ["/HouseImages/i18.jpg"]
+    },
+    {
+      "title": "House19",
+      "description": "2 BHK in suburb",
+      "price": 145000,
+      "location": "Phoenix",
+      "photos": ["/HouseImages/i19.jpg"]
+    },
+    {
+      "title": "House20",
+      "description": "3 BHK family friendly",
+      "price": 280000,
+      "location": "Phoenix",
+      "photos": ["/HouseImages/i20.jpg"]
+    },
+    {
+      "title": "House21",
+      "description": "4 BHK spacious",
+      "price": 480000,
+      "location": "Denver",
+      "photos": ["/HouseImages/i10.jpg"]
+    },
+    {
+      "title": "House22",
+      "description": "1 BHK city center",
+      "price": 105000,
+      "location": "Denver",
+      "photos": ["/HouseImages/i2.jpg"]
+    },
+    {
+      "title": "House23",
+      "description": "2 BHK near school",
+      "price": 160000,
+      "location": "Boston",
+      "photos": ["/HouseImages/i1.jpg"]
+    },
+    {
+      "title": "House24",
+      "description": "3 BHK affordable",
+      "price": 220000,
+      "location": "Boston",
+      "photos": ["/HouseImages/i18.jpg"]
+    },
+    {
+      "title": "House25",
+      "description": "4 BHK with garden",
+      "price": 520000,
+      "location": "Orlando",
+      "photos": ["/HouseImages/i19.jpg"]
+    },
+    {
+      "title": "House26",
+      "description": "2 BHK for rent",
+      "price": 80000,
+      "location": "Orlando",
+      "photos": ["/HouseImages/i1.jpg"]
+    },
+    {
+      "title": "House27",
+      "description": "3 BHK in posh locality",
+      "price": 370000,
+      "location": "San Diego",
+      "photos": ["/HouseImages/i17.jpg"]
+    },
+    {
+      "title": "House28",
+      "description": "1 BHK with gym",
+      "price": 110000,
+      "location": "San Diego",
+      "photos": ["/HouseImages/i8.jpg"]
+    },
+    {
+      "title": "House29",
+      "description": "4 BHK with office space",
+      "price": 610000,
+      "location": "Las Vegas",
+      "photos": ["/HouseImages/i4.jpg"]
+    },
+    {
+      "title": "House30",
+      "description": "2 BHK in prime location",
+      "price": 190000,
+      "location": "Las Vegas",
+      "photos": ["/HouseImages/i7.jpg"]
+    }
+  ]
+  

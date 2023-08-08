@@ -3,17 +3,16 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const ejs = require('ejs');
 const path = require('path');
-
+const multer = require('multer');
 const Sign = require('./Models/SignUpInModel');
 const Home = require('./Models/House');
-
 const app = express();
 const port = 3000;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-
+app.use('/HouseImages', express.static(__dirname + '/HouseImages'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -23,10 +22,52 @@ app.use(session({
   saveUninitialized: true
 }));
 
+// Connect to MongoDB and load JSON data
+const mongoose = require('mongoose');
+const config = require('./util/config');
+
+async function loadJsonData() {
+  try {
+    console.log('Loading JSON data...');
+    const count = await Home.countDocuments();
+    if (count === 0) {
+      // Clear the existing data in the 'House' collection
+      await Home.deleteMany({});
+      // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
+      const jsonData = require('/housesData.json');
+      const jsonDataWithPaths = jsonData.map(item => ({
+        ...item,
+        photos: item.photos.map(photo => `/HouseImages/${photo}`)
+      }));      
+      console.log('JSON data loaded:', jsonDataWithPaths);
+      
+      // Insert the JSON data into the 'House' collection
+      const insertedData = await Home.insertMany(jsonDataWithPaths);
+      console.log(`${insertedData.length} documents inserted into the 'House' collection.`);
+    } else {
+      console.log('Data already exists in the "House" collection. Skipping JSON data loading.');
+    }
+  } catch (err) {
+    console.error('Error loading JSON data into MongoDB:', err);
+  }
+}
+
+loadJsonData();
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'HouseImages'); // Set the destination folder for uploaded images
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix); // Set the filename for the uploaded image
+  }
+});
+
+const upload = multer({ storage: storage });
 // Authentication middleware
 const authenticateUser = (req, res, next) => {
   const user = req.session.user;
-
   if (user) {
     next(); // User is authenticated, continue to the next middleware or route handler
   } else {
@@ -95,31 +136,35 @@ app.get('/mainDashboard', (req, res) => {
   res.redirect('/'); // Redirect to the mainDashboard page
 });
 
-app.get('/houses', authenticateUser, async (req, res) => {
+// Fetch all houses from the MongoDB collection
+app.get('/houses', async (req, res) => {
   try {
-    const userID = req.session.user._id;
-    const houses = await Home.find({ userID });
-
+    const houses = await Home.find({});
+    const ownerData = require('D:\HouseProjectFinal\House_Listing\houseOwnerData.json');
     if (houses.length === 0) {
-      res.render('houses', { error: 'No houses found for the user', houses: [] });
+      res.render('houses', { error: 'No houses found', houses: [], currentUser: req.session.user });
       return;
     }
-
-    res.render('houses', { houses });
+    res.render('houses', { houses, ownerData, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error retrieving houses');
   }
 });
+
 app.get('/add-house', authenticateUser, (req, res) => {
   res.render('addHouse'); // Render the add-house form view
 });
 
-
-app.post('/add-house', authenticateUser, async (req, res) => {
+app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, res) => {
   try {
-    const { title, description, price, location, photos } = req.body;
+    const { title, description, price, location } = req.body;
     const userID = req.session.user._id;
+    
+    // Get the paths of uploaded images
+    const photos = req.files.map(file => `/HouseImages/${file.filename}`);
+    
+    // Create a new house object with the updated image paths
     const newHouse = new Home({ title, description, price, location, photos, userID });
     await newHouse.save();
     res.redirect('/houses');
@@ -129,17 +174,16 @@ app.post('/add-house', authenticateUser, async (req, res) => {
   }
 });
 
+
 app.get('/update-house/:id', authenticateUser, async (req, res) => {
   try {
     const houseID = req.params.id;
     const userID = req.session.user._id;
     const house = await Home.findOne({ _id: houseID, userID });
-
     if (!house) {
       res.status(404).send('House not found');
       return;
     }
-
     res.render('updateHouse', { house });
   } catch (err) {
     console.error(err);
@@ -147,18 +191,21 @@ app.get('/update-house/:id', authenticateUser, async (req, res) => {
   }
 });
 
-app.post('/update-house/:id', authenticateUser, async (req, res) => {
+
+app.post('/update-house/:id', authenticateUser, upload.array('photos', 4), async (req, res) => {
   try {
     const houseID = req.params.id;
     const userID = req.session.user._id;
-    const { title, description, price, location, photos } = req.body;
-    const updatedHouse = await Home.findOneAndUpdate({ _id: houseID, userID }, { title, description, price, location, photos });
-
+    const { title, description, price, location } = req.body;
+    const photos = req.files.map(file => `/HouseImages/${file.filename}`);
+    const updatedHouse = await Home.findOneAndUpdate(
+      { _id: houseID, userID },
+      { title, description, price, location, photos }
+    );
     if (!updatedHouse) {
       res.status(404).send('House not found');
       return;
     }
-
     res.redirect('/houses');
   } catch (err) {
     console.error(err);
@@ -200,6 +247,44 @@ app.post('/delete-house/:id', authenticateUser, async (req, res) => {
     console.error(err);
     res.status(500).send('Error deleting house');
   }
+});
+
+app.get('/search', async (req, res) => {
+  try {
+    const titleQuery = req.query.title;
+    const locationQuery = req.query.location; // Get the location query parameter
+
+    // Construct the search criteria using regular expressions for both title and location
+    const searchCriteria = {
+      $or: [
+        { title: { $regex: new RegExp(`^${titleQuery}$`, 'i') } },
+        { location: { $regex: new RegExp(`^${locationQuery}$`, 'i') } }
+      ]
+    };
+
+    // Use the search criteria to find matching houses
+    const houses = await Home.find(searchCriteria);
+
+    if (houses.length === 0) {
+      res.render('searchResults', { error: 'No houses found', houses: [], currentUser: req.session.user });
+      return;
+    }
+
+    res.render('searchResults', { houses, currentUser: req.session.user, error: null });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error searching for houses');
+  }
+});
+
+app.use((req, res, next) => {
+  res.status(404).send('Page not found.');
+});
+
+// Error handler middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).send('Something went wrong.');
 });
 
 app.listen(port, () => {
