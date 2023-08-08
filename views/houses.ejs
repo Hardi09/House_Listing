@@ -3,7 +3,6 @@
 <html>
 <head>
   <title>All Houses</title>
-  <link rel="stylesheet" href="./houses.css">
 </head>
 <body>
   <h1>All Houses</h1>
@@ -18,7 +17,9 @@
           <p><%= house.description %></p>
           <p>Price: <%= house.price %></p>
           <p>Location: <%= house.location %></p>
-          <img src="<%= house.photos[0] %>" alt="House Image">
+          <% house.photos.forEach(photo => { %>
+            <img src="<%= photo %>" alt="House Image">
+          <% }); %>          
           <!-- Check if the current user is the one who added this house -->
           <% if (house.userID && currentUser && house.userID.toString() === currentUser._id.toString()) { %>
             <button onclick="location.href='/update-house/<%= house._id %>'" type="button">Update</button>

@@ -9,6 +9,8 @@ const houseSchema = new mongoose.Schema({
   userID: { type: mongoose.Schema.Types.ObjectId, ref: 'SignUpIn' }
 });
 
+houseSchema.index({ title: 'text', description: 'text', location: 'text' });
+
 const House = mongoose.model('House', houseSchema);
 
 module.exports = House;

@@ -29,18 +29,19 @@ const config = require('./util/config');
 async function loadJsonData() {
   try {
     console.log('Loading JSON data...');
-    // Clear the existing data in the 'House' collection
-    await Home.deleteMany({});
-
-    // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
-    const jsonData = require('D://HouseProjectFinal/House_Listing/houses.json');
-
-    console.log('JSON data loaded:', jsonData);
-
-    // Insert the JSON data into the 'House' collection
-    const insertedData = await Home.insertMany(jsonData);
-
-    console.log(`${insertedData.length} documents inserted into the 'House' collection.`);
+    const count = await Home.countDocuments();
+    if (count === 0) {
+      // Clear the existing data in the 'House' collection
+      await Home.deleteMany({});
+      // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
+      const jsonData = require('D://HouseProjectFinal/House_Listing/housesData.json');
+      console.log('JSON data loaded:', jsonData);
+      // Insert the JSON data into the 'House' collection
+      const insertedData = await Home.insertMany(jsonData);
+      console.log(`${insertedData.length} documents inserted into the 'House' collection.`);
+    } else {
+      console.log('Data already exists in the "House" collection. Skipping JSON data loading.');
+    }
   } catch (err) {
     console.error('Error loading JSON data into MongoDB:', err);
   }
@@ -129,7 +130,6 @@ app.get('/houses', async (req, res) => {
       res.render('houses', { error: 'No houses found', houses: [], currentUser: req.session.user });
       return;
     }
-
     res.render('houses', { houses, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
@@ -147,6 +147,7 @@ app.post('/add-house', authenticateUser, async (req, res) => {
     const { title, description, price, location, photos } = req.body;
     const userID = req.session.user._id;
     const newHouse = new Home({ title, description, price, location, photos, userID });
+ console.log('Newly added house photos:', photos);
     await newHouse.save();
     res.redirect('/houses');
   } catch (err) {
@@ -222,6 +223,36 @@ app.post('/delete-house/:id', authenticateUser, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error deleting house');
+  }
+});
+
+// Add a route for handling the search request
+// Route to handle the house search by title
+app.get('/search', async (req, res) => {
+  try {
+    const titleQuery = req.query.title;
+    const locationQuery = req.query.location; // Get the location query parameter
+
+    // Construct the search criteria using regular expressions for both title and location
+    const searchCriteria = {
+      $or: [
+        { title: { $regex: new RegExp(`^${titleQuery}$`, 'i') } },
+        { location: { $regex: new RegExp(`^${locationQuery}$`, 'i') } }
+      ]
+    };
+
+    // Use the search criteria to find matching houses
+    const houses = await Home.find(searchCriteria);
+
+    if (houses.length === 0) {
+      res.render('searchResults', { error: 'No houses found', houses: [], currentUser: req.session.user });
+      return;
+    }
+
+    res.render('searchResults', { houses, currentUser: req.session.user, error: null });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error searching for houses');
   }
 });
 
