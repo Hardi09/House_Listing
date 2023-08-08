@@ -1,4 +1,4 @@
-<form action="/add-house" method="POST">
+<form action="/add-house" method="POST" enctype="multipart/form-data">
   <label for="title">Title:</label>
   <input type="text" name="title" id="title" required><br><br>
   <label for="description">Description:</label>
@@ -8,6 +8,6 @@
   <label for="location">Location:</label>
   <input type="text" name="location" id="location" required><br><br>
   <label for="photos">Photos:</label>
-  <input type="file" name="photos" id="photos" accept="image/*" multiple required>
+  <input type="file" name="photos" multiple>
   <button type="submit">Add House</button>
 </form>

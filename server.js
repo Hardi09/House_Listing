@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const ejs = require('ejs');
 const path = require('path');
-
+const multer = require('multer');
 const Sign = require('./Models/SignUpInModel');
 const Home = require('./Models/House');
 const app = express();
@@ -34,10 +34,15 @@ async function loadJsonData() {
       // Clear the existing data in the 'House' collection
       await Home.deleteMany({});
       // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
-      const jsonData = require('D://HouseProjectFinal/House_Listing/housesData.json');
-      console.log('JSON data loaded:', jsonData);
+      const jsonData = require('/housesData.json');
+      const jsonDataWithPaths = jsonData.map(item => ({
+        ...item,
+        photos: item.photos.map(photo => `/HouseImages/${photo}`)
+      }));      
+      console.log('JSON data loaded:', jsonDataWithPaths);
+      
       // Insert the JSON data into the 'House' collection
-      const insertedData = await Home.insertMany(jsonData);
+      const insertedData = await Home.insertMany(jsonDataWithPaths);
       console.log(`${insertedData.length} documents inserted into the 'House' collection.`);
     } else {
       console.log('Data already exists in the "House" collection. Skipping JSON data loading.');
@@ -52,7 +57,6 @@ loadJsonData();
 // Authentication middleware
 const authenticateUser = (req, res, next) => {
   const user = req.session.user;
-
   if (user) {
     next(); // User is authenticated, continue to the next middleware or route handler
   } else {
@@ -141,13 +145,29 @@ app.get('/add-house', authenticateUser, (req, res) => {
   res.render('addHouse'); // Render the add-house form view
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'HouseImages'); // Set the destination folder for uploaded images
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix); // Set the filename for the uploaded image
+  }
+});
 
-app.post('/add-house', authenticateUser, async (req, res) => {
+const upload = multer({ storage: storage });
+
+
+app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, res) => {
   try {
-    const { title, description, price, location, photos } = req.body;
+    const { title, description, price, location } = req.body;
     const userID = req.session.user._id;
+    
+    // Get the paths of uploaded images
+    const photos = req.files.map(file => `/HouseImages/${file.filename}`);
+    
+    // Create a new house object with the updated image paths
     const newHouse = new Home({ title, description, price, location, photos, userID });
- console.log('Newly added house photos:', photos);
     await newHouse.save();
     res.redirect('/houses');
   } catch (err) {
@@ -155,6 +175,7 @@ app.post('/add-house', authenticateUser, async (req, res) => {
     res.status(500).send('Error adding house');
   }
 });
+
 
 app.get('/update-house/:id', authenticateUser, async (req, res) => {
   try {
@@ -172,17 +193,21 @@ app.get('/update-house/:id', authenticateUser, async (req, res) => {
   }
 });
 
-app.post('/update-house/:id', authenticateUser, async (req, res) => {
+
+app.post('/update-house/:id', authenticateUser, upload.array('photos', 4), async (req, res) => {
   try {
     const houseID = req.params.id;
     const userID = req.session.user._id;
-    const { title, description, price, location, photos } = req.body;
-    const updatedHouse = await Home.findOneAndUpdate({ _id: houseID, userID }, { title, description, price, location, photos });
+    const { title, description, price, location } = req.body;
+    const photos = req.files.map(file => `/HouseImages/${file.filename}`);
+    const updatedHouse = await Home.findOneAndUpdate(
+      { _id: houseID, userID },
+      { title, description, price, location, photos }
+    );
     if (!updatedHouse) {
       res.status(404).send('House not found');
       return;
     }
-
     res.redirect('/houses');
   } catch (err) {
     console.error(err);
@@ -226,8 +251,6 @@ app.post('/delete-house/:id', authenticateUser, async (req, res) => {
   }
 });
 
-// Add a route for handling the search request
-// Route to handle the house search by title
 app.get('/search', async (req, res) => {
   try {
     const titleQuery = req.query.title;
