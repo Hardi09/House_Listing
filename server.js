@@ -54,6 +54,17 @@ async function loadJsonData() {
 
 loadJsonData();
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'HouseImages'); // Set the destination folder for uploaded images
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix); // Set the filename for the uploaded image
+  }
+});
+
+const upload = multer({ storage: storage });
 // Authentication middleware
 const authenticateUser = (req, res, next) => {
   const user = req.session.user;
@@ -129,12 +140,12 @@ app.get('/mainDashboard', (req, res) => {
 app.get('/houses', async (req, res) => {
   try {
     const houses = await Home.find({});
-
+    const ownerData = require('D:\HouseProjectFinal\House_Listing\houseOwnerData.json');
     if (houses.length === 0) {
       res.render('houses', { error: 'No houses found', houses: [], currentUser: req.session.user });
       return;
     }
-    res.render('houses', { houses, currentUser: req.session.user });
+    res.render('houses', { houses, ownerData, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error retrieving houses');
@@ -144,19 +155,6 @@ app.get('/houses', async (req, res) => {
 app.get('/add-house', authenticateUser, (req, res) => {
   res.render('addHouse'); // Render the add-house form view
 });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'HouseImages'); // Set the destination folder for uploaded images
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix); // Set the filename for the uploaded image
-  }
-});
-
-const upload = multer({ storage: storage });
-
 
 app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, res) => {
   try {
