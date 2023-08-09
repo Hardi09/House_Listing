@@ -2,29 +2,141 @@
 <html>
 <head>
   <title>Dashboard</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body styles */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Dashboard heading */
+    h1 {
+      font-size: 2.5rem;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      color: #3498db;
+      display: flex;
+      align-items: center;
+    }
+
+    .welcome-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  margin-top: 20px; /* Add margin to separate from the form */
+}
+
+
+    /* Form styles */
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    form {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: block;
+      color: #333;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button[type="submit"],
+    button[type="button"] {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button[type="submit"]:hover,
+    button[type="button"]:hover {
+      background-color: #2980b9;
+    }
+
+    /* Button styles */
+    .button-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .button-container button {
+      margin-right: 10px;
+    }
+
+    .logout-button {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome to the Dashboard, <%= user.username %>!</h1>
-  
-  <!-- Search by Title -->
-  <form action="/search" method="GET">
-    <label for="title">Search House by Title:</label>
-    <input type="text" name="title" id="title" required>
-    <button type="submit">Search</button>
-  </form>
-  
-  <!-- Search by Location -->
-  <form action="/search" method="GET">
-    <label for="location">Search House by Location:</label>
-    <input type="text" name="location" id="location" required>
-    <button type="submit">Search</button>
-  </form>
-  
-  <form action="/houses" method="GET">
-    <button type="submit">View All Houses</button>
-  </form>
-  
-  <!-- Add more content specific to the dashboard -->
-  <button onclick="location.href='/'">Logout</button>
+  <div class="welcome-container">
+    <h1>Welcome to the Dashboard, <%= user.username %>!</h1>
+  </div>
+
+  <div class="form-container">
+    <!-- Search by Title -->
+    <form action="/search" method="GET">
+      <label for="title">Search Houses by Title:</label>
+      <input type="text" name="title" id="title" placeholder="Enter title" required>
+      <button type="submit">Search</button>
+    </form>
+
+    <!-- Search by Location -->
+    <form action="/search" method="GET">
+      <label for="location">Search Houses by Location:</label>
+      <input type="text" name="location" id="location" placeholder="Enter location" required>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="button-container">
+    <form action="/houses" method="GET">
+      <button type="submit">View All Houses</button>
+    </form>
+  </div>
+
+  <div> 
+    <button class="logout-button" type="button" onclick="location.href='/'">Logout</button>
+  </div>
+
 </body>
 </html>
