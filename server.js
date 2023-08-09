@@ -12,7 +12,8 @@ const port = 3000;
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use('/HouseImages', express.static(__dirname + '/HouseImages'));
+app.use('/HouseImages', express.static(path.join(__dirname, 'HouseImages')));
+app.use(express.static(path.join(__dirname, 'public'))); // Adjust 'public' to your directory
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -31,26 +32,25 @@ async function loadJsonData() {
     console.log('Loading JSON data...');
     const count = await Home.countDocuments();
     if (count === 0) {
-      // Clear the existing data in the 'House' collection
+      // Clear the existing data in the 'Home' collection
       await Home.deleteMany({});
+
       // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
-      const jsonData = require('/housesData.json');
-      const jsonDataWithPaths = jsonData.map(item => ({
-        ...item,
-        photos: item.photos.map(photo => `/HouseImages/${photo}`)
-      }));      
-      console.log('JSON data loaded:', jsonDataWithPaths);
-      
-      // Insert the JSON data into the 'House' collection
-      const insertedData = await Home.insertMany(jsonDataWithPaths);
-      console.log(`${insertedData.length} documents inserted into the 'House' collection.`);
+      const houseData = require('./housesData.json');
+      console.log('House Data:', houseData);
+
+      // Insert the JSON data into the 'Home' collection
+      const insertedData = await Home.insertMany(houseData);
+      console.log(`${insertedData.length} documents inserted into the 'Home' collection.`);
     } else {
-      console.log('Data already exists in the "House" collection. Skipping JSON data loading.');
+      console.log('Data already exists in the "Home" collection. Skipping JSON data loading.');
     }
   } catch (err) {
     console.error('Error loading JSON data into MongoDB:', err);
   }
 }
+
+
 
 loadJsonData();
 
@@ -89,7 +89,7 @@ app.get('/signin', (req, res) => {
 
 app.post('/signup', async (req, res) => {
   try {
-    const { userID, username, password, email } = req.body;
+    const { userID, username, password, email,contactNumber } = req.body;
     const existingUser = await Sign.findOne({ username: username.toLowerCase() });
 
     if (existingUser) {
@@ -97,7 +97,7 @@ app.post('/signup', async (req, res) => {
       return;
     }
 
-    const newUser = new Sign({ userID, username, password, email });
+    const newUser = new Sign({ userID, username, password, email,contactNumber });
     await newUser.save();
     res.redirect('/signin'); // Redirect to the sign-in page
   } catch (err) {
@@ -140,12 +140,20 @@ app.get('/mainDashboard', (req, res) => {
 app.get('/houses', async (req, res) => {
   try {
     const houses = await Home.find({});
-    const ownerData = require('D:\HouseProjectFinal\House_Listing\houseOwnerData.json');
     if (houses.length === 0) {
       res.render('houses', { error: 'No houses found', houses: [], currentUser: req.session.user });
       return;
     }
-    res.render('houses', { houses, ownerData, currentUser: req.session.user });
+    // Include owner details for each house
+    const housesWithOwners = await Promise.all(houses.map(async house => {
+      const owner = house.ownerData;
+        if (owner) {
+          return { ...house._doc, ownerData: owner };
+        }
+      return house;
+    }));
+
+    res.render('houses', { houses: housesWithOwners, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error retrieving houses');
@@ -160,12 +168,25 @@ app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, 
   try {
     const { title, description, price, location } = req.body;
     const userID = req.session.user._id;
-    
-    // Get the paths of uploaded images
     const photos = req.files.map(file => `/HouseImages/${file.filename}`);
+
+    // Fetch the user's sign-up details
+    const user = await Sign.findById(userID);
     
-    // Create a new house object with the updated image paths
-    const newHouse = new Home({ title, description, price, location, photos, userID });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // Create a new house object with owner's information
+    const newHouse = new Home({
+      title, description, price, location, photos, userID,
+      owner: {
+        ownerName: user.username,
+        contactNumber: user.contactNumber,
+        email: user.email
+      }
+    });
+
     await newHouse.save();
     res.redirect('/houses');
   } catch (err) {
@@ -173,6 +194,7 @@ app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, 
     res.status(500).send('Error adding house');
   }
 });
+
 
 
 app.get('/update-house/:id', authenticateUser, async (req, res) => {
@@ -190,7 +212,6 @@ app.get('/update-house/:id', authenticateUser, async (req, res) => {
     res.status(500).send('Error retrieving house');
   }
 });
-
 
 app.post('/update-house/:id', authenticateUser, upload.array('photos', 4), async (req, res) => {
   try {
@@ -277,10 +298,43 @@ app.get('/search', async (req, res) => {
   }
 });
 
-app.use((req, res, next) => {
-  res.status(404).send('Page not found.');
+// Add this route after your other routes
+app.get('/owner-details/:houseTitle', async (req, res) => {
+  try {
+    const houseTitle = req.params.houseTitle;
+    console.log('Requested house title:', houseTitle);
+
+    // Query the database to find the house by title
+    const house = await Home.findOne({ title: houseTitle });
+    console.log('Found house:', house);
+
+    if (!house) {
+      console.log('House not found in database');
+      return res.status(404).send('House not found');
+    }
+
+    // Check if the house has owner details
+    if (!house.owner) {
+      console.log('Owner details not found for the house');
+      return res.status(404).send('Owner details not found');
+    }
+
+    console.log('Owner details found:', house.owner);
+
+    // Render the owner details template with owner data
+  // Render the owner details template with owner data
+res.render('ownerDetails', { ownerDetails: house.owner, house: house, currentUser: req.session.user });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error retrieving owner details');
+  }
 });
 
+app.use((req, res, next) => {
+  console.log('Request received:', req.url);
+  next();
+});
 // Error handler middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Details</title>
+</head>
+<body>
+    <h1>Owner Details</h1>
+    <% try { %>
+        <p><strong>Owner Name:</strong> <%= ownerDetails.ownerName %></p>
+        <p><strong>Contact Number:</strong> <%= ownerDetails.contactNumber %></p>
+        <p><strong>Email:</strong> <%= ownerDetails.email %></p>
+    <% } catch (error) { %>
+        <p>An error occurred while rendering owner details.</p>
+        <pre><%= error %></pre>
+    <% } %>
+    <a href="/houses">Back to Houses List</a>
+</body>
+</html>
