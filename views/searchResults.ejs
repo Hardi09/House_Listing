@@ -2,6 +2,61 @@
 <html>
 <head>
   <title>House Search Results</title>
+  <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body styles */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Card styles */
+    .card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: left;
+      width: 300px;
+      margin: 10px;
+    }
+
+    /* Image styles */
+    .card img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Button styles */
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
 </head>
 <body>
   <h1>House Search Results</h1>
@@ -11,19 +66,21 @@
     <% if (houses.length === 0) { %>
       <p>No houses found.</p>
     <% } else { %>
-      <ul>
+      <div class="card-container">
         <% houses.forEach(house => { %>
-          <li><%= house.title %> </li>
-            <li><%= house.description %> </li>
-            <li> <%= house.price %></li>
-            <li> <%= house.location %></li>
-            <li>
+          <div class="card">
+            <h2><%= house.title %></h2>
+            <p><%= house.description %></p>
+            <p>Price: <%= house.price %></p>
+            <p>Location: <%= house.location %></p>
+            <div class="image-container">
               <% house.photos.forEach(photo => { %>
-                <img src="<%= photo %>" alt="<%= house.title %> Photo" style="max-width: 200px;">
+                <img src="<%= photo %>" alt="<%= house.title %> Photo">
               <% }) %>
-            </li>
+            </div>
+          </div>
         <% }) %>
-      </ul>
+      </div>
     <% } %>
   <% } %>
 
