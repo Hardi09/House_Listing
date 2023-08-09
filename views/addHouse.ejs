@@ -1,13 +1,17 @@
 <form action="/add-house" method="POST" enctype="multipart/form-data">
   <label for="title">Title:</label>
   <input type="text" name="title" id="title" required><br><br>
+
   <label for="description">Description:</label>
   <textarea name="description" id="description" rows="4" cols="50" required></textarea><br><br>
+
   <label for="price">Price:</label>
   <input type="number" name="price" id="price" required><br><br>
+
   <label for="location">Location:</label>
   <input type="text" name="location" id="location" required><br><br>
   <label for="photos">Photos:</label>
-  <input type="file" name="photos" multiple>
+  <input type="file" name="photos" multiple><br><br>
+
   <button type="submit">Add House</button>
 </form>
