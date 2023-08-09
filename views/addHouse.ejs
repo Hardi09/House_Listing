@@ -1,17 +1,140 @@
-<form action="/add-house" method="POST" enctype="multipart/form-data">
-  <label for="title">Title:</label>
-  <input type="text" name="title" id="title" required><br><br>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add House</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <style>
+    body {
+      padding: 20px;
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
 
-  <label for="description">Description:</label>
-  <textarea name="description" id="description" rows="4" cols="50" required></textarea><br><br>
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: 	#FFFFCC;
+      border-radius: 10px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-  <label for="price">Price:</label>
-  <input type="number" name="price" id="price" required><br><br>
+    .btn-custom {
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  width: auto; /* Set to auto width */
+  /* Remove the width property to avoid fixed width */
+}
+    .btn-custom-primary {
+      background-color: #007bff;
+      color: white;
+    }
 
-  <label for="location">Location:</label>
-  <input type="text" name="location" id="location" required><br><br>
-  <label for="photos">Photos:</label>
-  <input type="file" name="photos" multiple><br><br>
+    .btn-custom-danger {
+      background-color: #dc3545;
+      color: white;
+    }
 
-  <button type="submit">Add House</button>
-</form>
+    
+
+    h2 {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #007bff;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
+
+    button[type="submit"] {
+      font-weight: bold;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-size: 18px;
+      width: 100%;
+    }
+
+     /* Style for title with background and border */
+     .title-container {
+      background-color: #10896f;
+      
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .title-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      text-transform: uppercase;
+    }
+    /* Style for form label with required asterisk */
+    .required-label::after {
+      content: " *";
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="title-container">
+      <div class="title-text">Add a New House</div>
+    </div>
+    <form action="/add-house" method="POST" enctype="multipart/form-data">
+      <label for="title" class="required-label">Title:</label>
+      <input type="text" name="title" id="title" required>
+
+      <label for="description" class="required-label">Description:</label>
+      <textarea name="description" id="description" rows="4" required></textarea>
+
+      <label for="price" class="required-label">Price:</label>
+      <input type="number" name="price" id="price" required>
+
+      <label for="location" class="required-label">Location:</label>
+      <input type="text" name="location" id="location" required>
+
+      <label for="photos" class="required-label">Photos:</label>
+      <input type="file" name="photos" multiple>
+      <br/>
+      <button style="width: auto;" type="submit" class="btn btn-custom btn-custom-primary">Add House</button>
+      <br/>
+    </form>
+    <br/>
+    <button onclick="location.href='/Houses'" type="button" class="btn btn-custom btn-custom-danger">All Houses</button>
+     
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

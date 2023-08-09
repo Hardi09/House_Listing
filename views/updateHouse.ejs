@@ -3,22 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <title>Update House</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #FFFFCC;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    form {
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .btn-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .btn-custom {
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  width: auto; /* Set to auto width */
+  /* Remove the width property to avoid fixed width */
+}
+    .btn-custom-primary {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-custom-danger {
+      background-color: #dc3545;
+      color: white;
+      margin-left: 0px;
+      
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+   
+ /* Style for title with background and border */
+ .title-container {
+      background-color: #10896f;
+      
+      padding: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .title-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+      text-transform: uppercase;
+    }
+  </style>
 </head>
 <body>
-  <h1>Update House</h1>
-  <form action="/update-house/<%= house._id %>" method="POST" enctype="multipart/form-data">
-    <label for="title">Title:</label>
-    <input type="text" name="title" id="title" value="<%= house.title %>" required><br><br>
-    <label for="description">Description:</label>
-    <textarea name="description" id="description" rows="4" cols="50" required><%= house.description %></textarea><br><br>
-    <label for="price">Price:</label>
-    <input type="number" name="price" id="price" value="<%= house.price %>" required><br><br>
-    <label for="location">Location:</label>
-    <input type="text" name="location" id="location" value="<%= house.location %>" required><br><br>
-    <label for="photos">Photos:</label>
-    <input type="file" name="photos" multiple><br><br>
-    <button type="submit">Update House</button>
-  </form>
-  <button onclick="location.href='/houses'">View All Houses</button>
+  <div class="container">
+    <div class="title-container">
+      <div class="title-text">Update House Details</div>
+    </div>
+    <form action="/update-house/<%= house._id %>" method="POST" enctype="multipart/form-data">
+      <label for="title">Title:</label>
+      <input type="text" name="title" id="title" value="<%= house.title %>" required><br>
+
+      <label for="description">Description:</label>
+      <textarea name="description" id="description" rows="4" cols="50" required><%= house.description %></textarea><br>
+
+      <label for="price">Price:</label>
+      <input type="number" name="price" id="price" value="<%= house.price %>" required><br>
+
+      <label for="location">Location:</label>
+      <input type="text" name="location" id="location" value="<%= house.location %>" required><br>
+
+      <label for="photos">Photos:</label>
+      <input type="file" name="photos" multiple><br><br>
+
+      <button type="submit" class="btn btn-custom btn-custom-primary">Update House</button>
+    </form>
+    
+    <div class="btn-container">
+      <button onclick="location.href='/houses'" class="btn btn-custom btn-custom-danger">Back to All Houses</button>
+    </div>
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</div>
 </body>
 </html>

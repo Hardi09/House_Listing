@@ -112,21 +112,6 @@
     <h1>Welcome to the Dashboard, <%= user.username %>!</h1>
   </div>
 
-  <div class="form-container">
-    <!-- Search by Title -->
-    <form action="/search" method="GET">
-      <label for="title">Search Houses by Title:</label>
-      <input type="text" name="title" id="title" placeholder="Enter title" required>
-      <button type="submit">Search</button>
-    </form>
-
-    <!-- Search by Location -->
-    <form action="/search" method="GET">
-      <label for="location">Search Houses by Location:</label>
-      <input type="text" name="location" id="location" placeholder="Enter location" required>
-      <button type="submit">Search</button>
-    </form>
-  </div>
 
   <div class="button-container">
     <form action="/houses" method="GET">
@@ -134,9 +119,13 @@
     </form>
   </div>
 
-  <div> 
-    <button class="logout-button" type="button" onclick="location.href='/'">Logout</button>
-  </div>
+  <button onclick="location.href='/add-house'" type="button" class="btn btn-add-house">Add House</button>
+    
 
+  <div> 
+    <button class="logout-button btn btn-danger" type="button" onclick="location.href='/'">Logout</button>
+  </div>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>
