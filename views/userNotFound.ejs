@@ -2,9 +2,14 @@
 <html>
 <head>
   <title>User Not Found</title>
+  <link rel="stylesheet" href="../styles/userNotFound.css">
+</link>
 </head>
 <body>
   <h1>User <%= username %> not found</h1>
-  <button onclick="location.href='/SignUp'">Sign Up</button>
+  <div class="button-container">
+    <button onclick="location.href='/SignUp'">Sign Up</button>
+    <button class="dashboard-button" onclick="location.href='/MainDashboard'">Back to Homepage</button>
+  </div>
 </body>
 </html>

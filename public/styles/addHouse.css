@@ -1,0 +1,98 @@
+body {
+  padding: 20px;
+  background-color: #f8f9fa;
+  font-family: Arial, sans-serif;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: 	#FFFFCC;
+  border-radius: 10px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom {
+font-weight: bold;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 18px;
+width: auto; /* Set to auto width */
+/* Remove the width property to avoid fixed width */
+}
+.btn-custom-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-custom-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+
+
+h2 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #007bff;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+input[type="file"] {
+  margin-bottom: 15px;
+}
+
+button[type="submit"] {
+  font-weight: bold;
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  width: 100%;
+}
+
+ /* Style for title with background and border */
+ .title-container {
+  background-color: #10896f;
+  
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.title-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+}
+/* Style for form label with required asterisk */
+.required-label::after {
+  content: " *";
+  color: red;
+}
