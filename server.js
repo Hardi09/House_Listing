@@ -34,7 +34,6 @@ async function loadJsonData() {
     if (count === 0) {
       // Clear the existing data in the 'Home' collection
       await Home.deleteMany({});
-
       // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
       const houseData = require('./housesData.json');
       console.log('House Data:', houseData);
@@ -74,7 +73,6 @@ const authenticateUser = (req, res, next) => {
 app.get('/', (req, res) => {
   res.render('mainDashboard');
 });
-
 app.get('/signup', (req, res) => {
   res.render('signup'); // Render the sign-up form view
 });
@@ -82,17 +80,14 @@ app.get('/signup', (req, res) => {
 app.get('/signin', (req, res) => {
   res.render('signin'); // Render the sign-in form view
 });
-
 app.post('/signup', async (req, res) => {
   try {
     const { userID, username, password, email,contactNumber } = req.body;
     const existingUser = await Sign.findOne({ username: username.toLowerCase() });
-
     if (existingUser) {
       res.render('signup', { error: 'Username already exists', success: '' });
       return;
     }
-
     const newUser = new Sign({ userID, username, password, email,contactNumber });
     await newUser.save();
     res.redirect('/signin'); // Redirect to the sign-in page
@@ -101,7 +96,6 @@ app.post('/signup', async (req, res) => {
     res.status(500).send('Error registering user');
   }
 });
-
 app.post('/signin', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -120,12 +114,10 @@ app.post('/signin', async (req, res) => {
    res.status(500).send('Error signing in');
   }
 });
-
 app.get('/dashboard', authenticateUser, (req, res) => {
   const user = req.session.user;
   res.render('dashboard', { user });
 });
-
 app.get('/mainDashboard', (req, res) => {
   req.session.destroy(); // Destroy the session to logout the user
   res.redirect('/'); // Redirect to the mainDashboard page
@@ -347,7 +339,6 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  console.log('Request received:', req.url);
   next();
 });
 // Error handler middleware
