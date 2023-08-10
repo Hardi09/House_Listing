@@ -38,7 +38,6 @@ async function loadJsonData() {
       // Load your JSON data here (replace 'jsonFilePath' with the actual path to your JSON data file)
       const houseData = require('./housesData.json');
       console.log('House Data:', houseData);
-
       // Insert the JSON data into the 'Home' collection
       const insertedData = await Home.insertMany(houseData);
       console.log(`${insertedData.length} documents inserted into the 'Home' collection.`);
@@ -49,9 +48,6 @@ async function loadJsonData() {
     console.error('Error loading JSON data into MongoDB:', err);
   }
 }
-
-
-
 loadJsonData();
 
 const storage = multer.diskStorage({
@@ -106,7 +102,6 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-
 app.post('/signin', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -135,24 +130,42 @@ app.get('/mainDashboard', (req, res) => {
   req.session.destroy(); // Destroy the session to logout the user
   res.redirect('/'); // Redirect to the mainDashboard page
 });
-
-// Fetch all houses from the MongoDB collection
-app.get('/houses', async (req, res) => {
+app.get('/api/houses', async (req, res) => {
   try {
     const houses = await Home.find({});
     if (houses.length === 0) {
-      res.render('houses', { error: 'No houses found', houses: [], currentUser: req.session.user });
-      return;
+      return res.status(404).json({ error: 'No houses found' });
     }
     // Include owner details for each house
     const housesWithOwners = await Promise.all(houses.map(async house => {
       const owner = house.ownerData;
-        if (owner) {
-          return { ...house._doc, ownerData: owner };
-        }
+      if (owner) {
+        return { ...house._doc, ownerData: owner };
+      }
+      return house;
+    }));
+    res.json({ houses: housesWithOwners });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error retrieving houses' });
+  }
+
+});
+app.get('/houses', async (req, res) => {
+  try {
+    const houses = await Home.find({});
+    if (houses.length === 0) {
+      return res.status(404).render('houses', { houses: [], currentUser: req.session.user });
+    }
+    const housesWithOwners = await Promise.all(houses.map(async house => {
+      const owner = house.ownerData;
+      if (owner) {
+        return { ...house._doc, ownerData: owner };
+      }
       return house;
     }));
 
+    // Render the houses.ejs template and pass houses and currentUser variables
     res.render('houses', { houses: housesWithOwners, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
@@ -194,8 +207,6 @@ app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, 
     res.status(500).send('Error adding house');
   }
 });
-
-
 
 app.get('/update-house/:id', authenticateUser, async (req, res) => {
   try {
