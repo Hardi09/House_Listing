@@ -15,16 +15,12 @@
     <form action="/add-house" method="POST" enctype="multipart/form-data">
       <label for="title" class="required-label">Title:</label>
       <input type="text" name="title" id="title" required>
-
       <label for="description" class="required-label">Description:</label>
       <textarea name="description" id="description" rows="4" required></textarea>
-
       <label for="price" class="required-label">Price:</label>
       <input type="number" name="price" id="price" required>
-
       <label for="location" class="required-label">Location:</label>
       <input type="text" name="location" id="location" required>
-
       <label for="photos" class="required-label">Photos:</label>
       <input type="file" name="photos" multiple>
       <br/>
@@ -33,9 +29,7 @@
     </form>
     <br/>
     <button onclick="location.href='/Houses'" type="button" class="btn btn-custom btn-custom-danger">All Houses</button>
-     
   </div>
-
   <!-- Bootstrap JS -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>

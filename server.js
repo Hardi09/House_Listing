@@ -27,6 +27,7 @@ app.use(session({
 const mongoose = require('mongoose');
 const config = require('./util/config');
 
+//loading json data tomongoDB
 async function loadJsonData() {
   try {
     console.log('Loading JSON data...');
@@ -49,6 +50,7 @@ async function loadJsonData() {
 }
 loadJsonData();
 
+//function used for image storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'HouseImages'); // Set the destination folder for uploaded images
@@ -70,13 +72,17 @@ const authenticateUser = (req, res, next) => {
   }
 };
 
+//home page
 app.get('/', (req, res) => {
   res.render('mainDashboard');
 });
+
+//signUp page
 app.get('/signup', (req, res) => {
   res.render('signup'); // Render the sign-up form view
 });
 
+//signIn page
 app.get('/signin', (req, res) => {
   res.render('signin'); // Render the sign-in form view
 });
@@ -114,14 +120,19 @@ app.post('/signin', async (req, res) => {
    res.status(500).send('Error signing in');
   }
 });
+
+//user welcome page
 app.get('/dashboard', authenticateUser, (req, res) => {
   const user = req.session.user;
   res.render('dashboard', { user });
 });
+
 app.get('/mainDashboard', (req, res) => {
   req.session.destroy(); // Destroy the session to logout the user
   res.redirect('/'); // Redirect to the mainDashboard page
 });
+
+//testing api to view all houses
 app.get('/api/houses', async (req, res) => {
   try {
     const houses = await Home.find({});
@@ -143,6 +154,8 @@ app.get('/api/houses', async (req, res) => {
   }
 
 });
+
+//display all houses
 app.get('/houses', async (req, res) => {
   try {
     const houses = await Home.find({});
@@ -165,6 +178,7 @@ app.get('/houses', async (req, res) => {
   }
 });
 
+//adding a house
 app.get('/add-house', authenticateUser, (req, res) => {
   res.render('addHouse'); // Render the add-house form view
 });
@@ -200,6 +214,7 @@ app.post('/add-house', authenticateUser, upload.array('photos', 4), async (req, 
   }
 });
 
+//updating house
 app.get('/update-house/:id', authenticateUser, async (req, res) => {
   try {
     const houseID = req.params.id;
@@ -237,6 +252,8 @@ app.post('/update-house/:id', authenticateUser, upload.array('photos', 4), async
   }
 });
 
+
+//deleting house
 app.get('/delete-house/:id', authenticateUser, async (req, res) => {
   try {
     const houseID = req.params.id;
@@ -273,11 +290,11 @@ app.post('/delete-house/:id', authenticateUser, async (req, res) => {
   }
 });
 
+//searching for specific house
 app.get('/search', async (req, res) => {
   try {
     const titleQuery = req.query.title;
     const locationQuery = req.query.location; // Get the location query parameter
-
     // Construct the search criteria using regular expressions for both title and location
     const searchCriteria = {
       $or: [
@@ -285,19 +302,38 @@ app.get('/search', async (req, res) => {
         { location: { $regex: new RegExp(`^${locationQuery}$`, 'i') } }
       ]
     };
-
     // Use the search criteria to find matching houses
     const houses = await Home.find(searchCriteria);
-
     if (houses.length === 0) {
       res.render('searchResults', { error: 'No houses found', houses: [], currentUser: req.session.user });
       return;
     }
-
     res.render('searchResults', { houses, currentUser: req.session.user, error: null });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error searching for houses');
+  }
+});
+
+//api-end-point for searching
+app.get('/api/search', async (req, res) => {
+  try {
+    const titleQuery = req.query.title;
+    const locationQuery = req.query.location;
+    // Construct the search criteria using regular expressions for both title and location
+    const searchCriteria = {
+      $or: [
+        { title: { $regex: new RegExp(`^${titleQuery}$`, 'i') } },
+        { location: { $regex: new RegExp(`^${locationQuery}$`, 'i') } }
+      ]
+    };
+    // Search for houses using the search criteria
+    const searchResults = await Home.find(searchCriteria);
+    // Return the search results as a JSON response
+    res.json({ results: searchResults });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error performing search' });
   }
 });
 
@@ -306,7 +342,6 @@ app.get('/owner-details/:houseTitle', async (req, res) => {
   try {
     const houseTitle = req.params.houseTitle;
     console.log('Requested house title:', houseTitle);
-
     // Query the database to find the house by title
     const house = await Home.findOne({ title: houseTitle });
     console.log('Found house:', house);
@@ -321,19 +356,37 @@ app.get('/owner-details/:houseTitle', async (req, res) => {
       console.log('Owner details not found for the house');
       return res.status(404).send('Owner details not found');
     }
-
-    console.log('Owner details found:', house.owner);
-
     // Render the owner details template with owner data
   // Render the owner details template with owner data
-res.render('ownerDetails', { ownerDetails: house.owner, house: house, currentUser: req.session.user });
-
+  res.render('ownerDetails', { ownerDetails: house.owner, house: house, currentUser: req.session.user });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error retrieving owner details');
   }
 });
 
+//api-end-point for owner details 
+app.get('/api/owner-details/:houseTitle', async (req, res) => {
+  try {
+    const houseTitle = req.params.houseTitle;
+    console.log('Requested house title:', houseTitle);
+    // Query the database to find the house by title
+    const house = await Home.findOne({ title: houseTitle });
+    console.log('Found house:', house);
+    if (!house) {
+      return res.status(404).json({ error: 'House not found' });
+    }
+    // Check if the house has owner details
+    if (!house.owner) {
+      return res.status(404).json({ error: 'Owner details not found' });
+    }
+    // Return the owner details as JSON response
+    res.json({ ownerDetails: house.owner, house: house });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error retrieving owner details' });
+  }
+});
 app.use((req, res, next) => {
   res.status(404).render('404'); // Render a 404 view
 });

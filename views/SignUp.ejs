@@ -1,62 +1,90 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Sign Up</title>
-</head>
-<body>
-  <h1>Sign Up</h1>
-  <% if (typeof error !== 'undefined' && error) { %>
-    <p style="color: red;"><%= error %></p>
-  <% } else if (typeof success !== 'undefined' && success) { %>
-    <p><%= success %></p>
-  <% } %>
-  <form action="/signup" method="POST">
-    <label for="username">Username:</label>
-    <input type="text" name="username" id="username" required><br>
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required><br>
-    <label for="email">Email:</label>
-    <input type="email" name="email" id="email" required><br>
-    <label for="contactNumber">Contact Number:</label>  -->
-    <!-- New field -->
-    <!-- <input type="text" name="contactNumber" id="contactNumber" required><br>
-    <input type="submit" value="Sign Up">
-  </form>
-  <button onclick="location.href='/'">Go to Main Dashboard</button>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Sign Up</title>
   <link rel="stylesheet" href="../styles/SignUp.css">
-  </link>
 </head>
 <body>
   <div class="container">
     <div class="form-container">
       <h1 class="creative-heading">Sign Up</h1>
-      <% if (typeof error !== 'undefined' && error) { %>
-        <p class="error-message"><%= error %></p>
-      <% } else if (typeof success !== 'undefined' && success) { %>
-        <p class="success-message"><%= success %></p>
-      <% } %>
-      <form action="/signup" method="POST">
+      <form action="/signup" method="POST" onsubmit="return validateForm()">
         <label for="username">Username:</label>
         <input type="text" name="username" id="username" required>
+        <span id="usernameError" class="error"></span>
         <label for="password">Password:</label>
         <input type="password" name="password" id="password" required>
+        <span id="passwordError" class="error"></span>
         <label for="email">Email:</label>
         <input type="email" name="email" id="email" required>
+        <span id="emailError" class="error"></span>
         <label for="contactNumber">Contact Number:</label>
         <input type="text" name="contactNumber" id="contactNumber" required>
+        <span id="contactNumberError" class="error"></span>
         <input type="submit" value="Sign Up">
       </form>
       <button class="dashboard-button" onclick="location.href='/MainDashboard'">Back to Homepage</button>
     </div>
   </div>
+  
+  <script>
+    function validateForm() {
+      var username = document.getElementById('username').value;
+      var password = document.getElementById('password').value;
+      var email = document.getElementById('email').value;
+      var contactNumber = document.getElementById('contactNumber').value;
+
+      var usernameError = document.getElementById('usernameError');
+      var passwordError = document.getElementById('passwordError');
+      var emailError = document.getElementById('emailError');
+      var contactNumberError = document.getElementById('contactNumberError');
+      
+      usernameError.innerHTML = '';
+      passwordError.innerHTML = '';
+      emailError.innerHTML = '';
+      contactNumberError.innerHTML = '';
+
+      var isValid = true;
+
+      if (username.trim() === '') {
+        usernameError.innerHTML = 'Username is required.';
+        isValid = false;
+      }
+
+      if (password.trim() === '') {
+        passwordError.innerHTML = 'Password is required.';
+        isValid = false;
+      }
+
+      if (email.trim() === '') {
+        emailError.innerHTML = 'Email is required.';
+        isValid = false;
+      } else if (!isValidEmail(email)) {
+        emailError.innerHTML = 'Invalid email format.';
+        isValid = false;
+      }
+
+      if (contactNumber.trim() === '') {
+        contactNumberError.innerHTML = 'Contact Number is required.';
+        isValid = false;
+      } else if (!isValidContactNumber(contactNumber)) {
+        contactNumberError.innerHTML = 'Invalid contact number. Contact number must be numeric and have exactly 10 digits.';
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function isValidEmail(email) {
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function isValidContactNumber(contactNumber) {
+      var contactNumberRegex = /^[0-9]{10}$/;
+      return contactNumberRegex.test(contactNumber);
+    }
+  </script>
 </body>
 </html>
