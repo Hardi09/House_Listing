@@ -4,7 +4,9 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+.error {
+  color: red;
+}
 /* Body styles */
 body {
   display: flex;
